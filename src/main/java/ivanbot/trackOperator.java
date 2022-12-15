@@ -17,7 +17,7 @@ public class trackOperator extends AudioEventAdapter {
     private final AudioManager audioManager;
     private final BlockingQueue<AudioTrack> queue;
 
-    private final int timeoutTime = 5; // Time in minutes
+    private final int TIMEOUT_TIME = 5; // Time in minutes
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -32,7 +32,7 @@ public class trackOperator extends AudioEventAdapter {
                 }
             }
         };
-        final ScheduledFuture<?> checkerHandle = scheduler.schedule(checker, timeoutTime, MINUTES);
+        final ScheduledFuture<?> checkerHandle = scheduler.schedule(checker, TIMEOUT_TIME, MINUTES);
     }
     public trackOperator(AudioPlayer audioPlayer, AudioManager audioManager){
         this.audioPlayer = audioPlayer;
@@ -64,9 +64,14 @@ public class trackOperator extends AudioEventAdapter {
     public boolean nextTrack(){
         this.audioPlayer.startTrack(this.queue.poll(), false);
         AudioTrack track = audioPlayer.getPlayingTrack();
-        if (track == null && audioManager.isConnected()) {
-            playingCheck();
-            return false;
+
+        try {
+            if (track == null && audioManager.isConnected()) {
+                playingCheck();
+                return false;
+            }
+        } catch (NullPointerException e){
+
         }
         return true;
     }

@@ -125,7 +125,7 @@ public class CommandManager extends ListenerAdapter {
 
             case "ijump":
                 if (!voiceChannelCheck(event)) {
-                    event.reply("На канал сначала зайди...");
+                    event.reply("На канал сначала зайди...").queue();
                     return;
                 }
                 OptionMapping am = event.getOption("amount");
@@ -136,7 +136,7 @@ public class CommandManager extends ListenerAdapter {
 
             case "ipause":
                 if (!voiceChannelCheck(event)) {
-                    event.reply("На канал сначала зайди...");
+                    event.reply("На канал сначала зайди...").queue();
                     return;
                 }
                 if (PlayerManager.GetINSTANCE().pause(event.getChannel().asTextChannel()))
@@ -148,7 +148,7 @@ public class CommandManager extends ListenerAdapter {
 
             case "isearch":
                 if (!voiceChannelCheck(event)) {
-                    event.getChannel().asTextChannel().sendMessage("В канал сначала зайди...").queue();
+                    event.getChannel().asTextChannel().sendMessage("На канал сначала зайди...").queue();
                     return;
                 }
 
@@ -182,7 +182,7 @@ public class CommandManager extends ListenerAdapter {
     public void loadTrack(SlashCommandInteractionEvent event, String l){
 
         if (!voiceChannelCheck(event)) {
-            event.getChannel().asTextChannel().sendMessage("В канал сначала зайди...").queue();
+            event.getChannel().asTextChannel().sendMessage("На канал сначала зайди...").queue();
             return;
         }
 
@@ -229,9 +229,9 @@ public class CommandManager extends ListenerAdapter {
 
     public boolean voiceChannelCheck(SlashCommandInteractionEvent event){
         Member member = event.getMember();
-        VoiceChannel memberChannel = member.getVoiceState().getChannel().asVoiceChannel();
-
-        if (memberChannel == null) {
+        try {
+            VoiceChannel memberChannel = member.getVoiceState().getChannel().asVoiceChannel();
+        } catch (NullPointerException e) {
             return false;
         }
         return true;

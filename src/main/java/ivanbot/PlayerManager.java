@@ -62,7 +62,7 @@ public class PlayerManager {
                     return;
                 }
                 musicManager.getOperator().queue(audioTrack);
-                textChannel.sendMessage("**" + username + "** добавил трек **" + audioTrack.getInfo().title + " (" + getTrackDuration(audioTrack.getInfo().length) + ")**");
+                textChannel.sendMessage("**" + username + "** добавил трек **" + audioTrack.getInfo().title + " (" + getTrackDuration(audioTrack.getInfo().length) + ")**").queue();
             }
 
             @Override
@@ -123,11 +123,13 @@ public class PlayerManager {
 
             @Override
             public void playlistLoaded(AudioPlaylist audioPlaylist) {
+
+                musicManager.slistClear();
                 List<String> list = new ArrayList<>();
                 final List<AudioTrack> tracks = audioPlaylist.getTracks();
                 String output = "";
 
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 10 && i < tracks.size(); i++) {
                     AudioTrack track = tracks.get(i);
                     output += ("**[" + i + "]** " + track.getInfo().title) + " **(" + getTrackDuration(track.getInfo().length) + ")** \n";
                     list.add(track.getInfo().uri);

@@ -43,6 +43,10 @@ public class GuildMusicManager {
         list.searchListAdd(l);
     }
 
+    public void slistClear() {
+        list.clearList();
+    }
+
     public String slistGetInfo(int num){
         return list.getInfo(num);
     }
