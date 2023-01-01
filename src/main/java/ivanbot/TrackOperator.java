@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 import static ivanbot.TrackDuration.getTrackDuration;
 import static java.util.concurrent.TimeUnit.*;
 
-public class trackOperator extends AudioEventAdapter {
+public class TrackOperator extends AudioEventAdapter {
     private final AudioPlayer audioPlayer;
     private final AudioManager audioManager;
     private final BlockingQueue<AudioTrack> queue;
@@ -21,6 +21,11 @@ public class trackOperator extends AudioEventAdapter {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    public TrackOperator(AudioPlayer audioPlayer, AudioManager audioManager){
+        this.audioPlayer = audioPlayer;
+        this.audioManager = audioManager;
+        this.queue = new LinkedBlockingQueue<>();
+    }
     public void playingCheck() {
         final Runnable checker = new Runnable() {
 
@@ -33,11 +38,6 @@ public class trackOperator extends AudioEventAdapter {
             }
         };
         final ScheduledFuture<?> checkerHandle = scheduler.schedule(checker, TIMEOUT_TIME, MINUTES);
-    }
-    public trackOperator(AudioPlayer audioPlayer, AudioManager audioManager){
-        this.audioPlayer = audioPlayer;
-        this.audioManager = audioManager;
-        this.queue = new LinkedBlockingQueue<>();
     }
 
     public void queue(AudioTrack track){
@@ -71,7 +71,7 @@ public class trackOperator extends AudioEventAdapter {
                 return false;
             }
         } catch (NullPointerException e){
-
+            //its kinda empty
         }
         return true;
     }
@@ -127,6 +127,8 @@ public class trackOperator extends AudioEventAdapter {
         try
         {
             textChannel.sendMessage(track.getInfo().title).queue();
+            TextArtPlayer textArtPlayer = new TextArtPlayer(track.getDuration(), track.getPosition());
+            textChannel.sendMessage(textArtPlayer.buildAndPrintTextPlayer()).queue();
         }
         catch (NullPointerException e)
         {
