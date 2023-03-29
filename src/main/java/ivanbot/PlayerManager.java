@@ -9,6 +9,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.*;
@@ -124,18 +126,22 @@ public class PlayerManager {
             @Override
             public void playlistLoaded(AudioPlaylist audioPlaylist) {
 
-                musicManager.slistClear();
                 List<String> list = new ArrayList<>();
                 final List<AudioTrack> tracks = audioPlaylist.getTracks();
                 String output = "";
 
-                for (int i = 0; i < 10 && i < tracks.size(); i++) {
-                    AudioTrack track = tracks.get(i);
-                    output += ("**[" + i + "]** " + track.getInfo().title) + " **(" + getTrackDuration(track.getInfo().length) + ")** \n";
-                    list.add(track.getInfo().uri);
-                }
-                musicManager.slistAdd(list);
-                textChannel.sendMessage(output + "Чтобы включить трек по номеру, использовать команду **/ips (номер)**").queue();
+                textChannel.sendMessage("Выбор трека:").addActionRow(StringSelectMenu.create("Выбор трека")
+                        .addOption(tracks.get(0).getInfo().title, tracks.get(0).getInfo().uri, getTrackDuration(tracks.get(0).getDuration()))
+                        .addOption(tracks.get(1).getInfo().title, tracks.get(1).getInfo().uri, getTrackDuration(tracks.get(1).getDuration()))
+                        .addOption(tracks.get(2).getInfo().title, tracks.get(2).getInfo().uri, getTrackDuration(tracks.get(2).getDuration()))
+                        .addOption(tracks.get(3).getInfo().title, tracks.get(3).getInfo().uri, getTrackDuration(tracks.get(3).getDuration()))
+                        .addOption(tracks.get(4).getInfo().title, tracks.get(4).getInfo().uri, getTrackDuration(tracks.get(4).getDuration()))
+                        .addOption(tracks.get(5).getInfo().title, tracks.get(5).getInfo().uri, getTrackDuration(tracks.get(5).getDuration()))
+                        .addOption(tracks.get(6).getInfo().title, tracks.get(6).getInfo().uri, getTrackDuration(tracks.get(6).getDuration()))
+                        .addOption(tracks.get(7).getInfo().title, tracks.get(7).getInfo().uri, getTrackDuration(tracks.get(7).getDuration()))
+                        .addOption(tracks.get(8).getInfo().title, tracks.get(8).getInfo().uri, getTrackDuration(tracks.get(8).getDuration()))
+                        .addOption(tracks.get(9).getInfo().title, tracks.get(9).getInfo().uri, getTrackDuration(tracks.get(9).getDuration())) //this is a terrible mess
+                        .build()).queue();
             }
 
             @Override
@@ -182,11 +188,6 @@ public class PlayerManager {
     public void clearList(TextChannel textChannel){
         final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
         musicManager.getOperator().drainList();
-    }
-
-    public String selectFromSearchList(TextChannel textChannel, int num){
-        final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
-        return musicManager.slistGetInfo(num);
     }
 
 

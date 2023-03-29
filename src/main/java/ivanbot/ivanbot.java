@@ -28,6 +28,7 @@ public class ivanbot {
         shardManager = builder.build();
 
         shardManager.addEventListener(new CommandManager());
+        shardManager.addEventListener(new EventManager());
     }
 
     public Dotenv getConfig()

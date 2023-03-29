@@ -1,17 +1,25 @@
 package ivanbot;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,45 +31,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CommandManager extends ListenerAdapter {
-
-    @Override
-    public void onGuildReady(GuildReadyEvent event) {
-        List<CommandData> commandData = new ArrayList<>();
-        commandData.add(Commands.slash("ihelp","Справка по ИванБоту"));
-
-        OptionData track = new OptionData(OptionType.STRING, "track", "Че слушать будем?", true);
-        OptionData number = new OptionData(OptionType.INTEGER, "number", "номер трека по списку", true);
-        commandData.add(Commands.slash("iplay", "ыграть музыку пж").addOptions(track));
-        commandData.add(Commands.slash("ip", "ыграть музыку пж").addOptions(track));
-        commandData.add(Commands.slash("isearch", "поиск по ютубу").addOptions(track));
-        commandData.add(Commands.slash("ips", "включить трек по предварительно найденному номеру").addOptions(number));
-
-        commandData.add(Commands.slash("iskip","пропустить трек."));
-        commandData.add(Commands.slash("is", "пропустить трек."));
-
-        commandData.add(Commands.slash("imychannel", "информация о голосовом канале."));
-
-        commandData.add(Commands.slash("augh", "a secret command"));
-
-        commandData.add(Commands.slash("iclear", "очистить очередь"));
-
-        commandData.add(Commands.slash("ilist", "че там в очереди-то этой?"));
-        commandData.add(Commands.slash("iqueue", "че там в очереди-то этой?"));
-
-        commandData.add(Commands.slash("inow", "че за трек сейчас играет?"));
-
-        commandData.add(Commands.slash("ileave", "покинуть канал"));
-
-        OptionData amount = new OptionData(OptionType.INTEGER, "amount", "сколько пропускаем", true);
-        commandData.add(Commands.slash("ijump", "пропустить несколько треков").addOptions(amount));
-
-        commandData.add(Commands.slash("ipause", "поставить на паузу"));
-
-
-
-        event.getGuild().updateCommands().addCommands(commandData).queue();
-    }
-
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
@@ -87,7 +56,7 @@ public class CommandManager extends ListenerAdapter {
             case "iplay":
 
             case "ip":
-                event.reply("Обрабатываем ваш запрос, ожидайте...").queue();
+                event.reply("Обрабатываем ваш запрос, ожидайте...").setEphemeral(true).queue();
                 loadTrack(event, null);
                 break;
 
@@ -152,7 +121,7 @@ public class CommandManager extends ListenerAdapter {
                     return;
                 }
 
-                event.reply("Обрабатываем ваш запрос, ожидайте...").queue();
+                event.reply("Обрабатываем ваш запрос, ожидайте...").setEphemeral(true).queue();
                 Member member = event.getMember();
                 final VoiceChannel memberChannel = (VoiceChannel) member.getVoiceState().getChannel();
                 final User user = member.getUser();
@@ -169,14 +138,29 @@ public class CommandManager extends ListenerAdapter {
                 PlayerManager.GetINSTANCE().search(event.getChannel().asTextChannel(), link, event.getGuild().getAudioManager());
                 break;
 
-            case "ips":
-                event.reply("Обрабатываем ваш запрос, ожидайте...").queue();
-                OptionMapping option = event.getOption("number");
-                int number = option.getAsInt();
-                String l = PlayerManager.GetINSTANCE().selectFromSearchList(event.getChannel().asTextChannel(), number);
-                loadTrack(event, l);
+            case "systemoutprintlnguildlist":
+                event.reply("debug info has been sent to the console").queue();
+                for (Guild g : event.getJDA().getGuilds()){
+                    System.out.println(g.toString());
+                    for (Member m: g.getMembers()){
+                        System.out.println(m.toString());
+                    }
+                    System.out.println();
+                }
+                break;
+
+            case "testcommand":
                 break;
         }
+    }
+
+    @Override
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
+        event.getMessage().delete().queue();
+        event.reply("Трек выбран.").setEphemeral(true).queue();
+        String l = event.getValues().get(0);
+        if (l != null)
+            loadTrack(event, l);
     }
 
     public void loadTrack(SlashCommandInteractionEvent event, String l){
@@ -193,8 +177,11 @@ public class CommandManager extends ListenerAdapter {
         final String username = user.getName();
 
         String link = "";
+        if (!audioManager.isConnected()) {
+            audioManager.openAudioConnection(memberChannel);
+            event.getChannel().asTextChannel().sendMessage("**!!!Интерфейс команды /isearch получил обновление, советую заценить :)!!!**").queue();
+        }
 
-        audioManager.openAudioConnection(memberChannel);
 
         if (l == null)
         {
@@ -209,6 +196,24 @@ public class CommandManager extends ListenerAdapter {
             link = l;
         }
         PlayerManager.GetINSTANCE().loadAndPlay(event.getChannel().asTextChannel(), link, username, audioManager);
+
+    }
+
+    public void loadTrack(StringSelectInteractionEvent event, String l){
+
+        if (!voiceChannelCheck(event)) {
+            event.getChannel().asTextChannel().sendMessage("На канал сначала зайди...").queue();
+            return;
+        }
+
+        Member member = event.getMember();
+        final AudioManager audioManager = event.getGuild().getAudioManager();
+        final VoiceChannel memberChannel = (VoiceChannel) member.getVoiceState().getChannel();
+        final User user = member.getUser();
+        final String username = user.getName();
+
+        audioManager.openAudioConnection(memberChannel);
+        PlayerManager.GetINSTANCE().loadAndPlay(event.getChannel().asTextChannel(), l, username, audioManager);
 
     }
     public boolean isUrl(String url) {
@@ -228,6 +233,15 @@ public class CommandManager extends ListenerAdapter {
     }
 
     public boolean voiceChannelCheck(SlashCommandInteractionEvent event){
+        Member member = event.getMember();
+        try {
+            VoiceChannel memberChannel = member.getVoiceState().getChannel().asVoiceChannel();
+        } catch (NullPointerException e) {
+            return false;
+        }
+        return true;
+    }
+    public boolean voiceChannelCheck(StringSelectInteractionEvent event){
         Member member = event.getMember();
         try {
             VoiceChannel memberChannel = member.getVoiceState().getChannel().asVoiceChannel();
