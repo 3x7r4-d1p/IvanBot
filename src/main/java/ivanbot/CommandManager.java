@@ -151,6 +151,18 @@ public class CommandManager extends ListenerAdapter {
 
             case "testcommand":
                 break;
+
+            case "iseek":
+                event.reply("Обрабатываем ваш запрос, ожидайте...").setEphemeral(true).queue();
+                OptionMapping hours = event.getOption("hours");
+                OptionMapping minutes = event.getOption("minutes");
+                OptionMapping seconds = event.getOption("seconds");
+                long position = seconds.getAsInt() * 1000;
+                position += minutes.getAsInt() * 1000 * 60;
+                position += hours.getAsInt() * 1000 * 3600;
+
+                PlayerManager.GetINSTANCE().seek(event.getChannel().asTextChannel(), position);
+                break;
         }
     }
 

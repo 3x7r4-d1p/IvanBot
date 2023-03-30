@@ -43,7 +43,10 @@ public class CommandsList {
         commandData.add(Commands.slash("systemoutprintlnguildlist", "a debug command"));
 
         commandData.add(Commands.slash("testcommand", "test command"));
-
+        OptionData hours = new OptionData(OptionType.INTEGER, "hours", "на сколько часов перематываем", true);
+        OptionData minutes = new OptionData(OptionType.INTEGER, "minutes", "на сколько минут перематываем", true);
+        OptionData seconds = new OptionData(OptionType.INTEGER, "seconds", "на сколько секунд перематываем", true);
+        commandData.add(Commands.slash("iseek", "перемотка трека").addOptions(hours, minutes, seconds));
         return commandData;
     }
 

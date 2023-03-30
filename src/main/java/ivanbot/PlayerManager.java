@@ -190,6 +190,11 @@ public class PlayerManager {
         musicManager.getOperator().drainList();
     }
 
+    public void seek(TextChannel textChannel, long position){
+        final GuildMusicManager musicManager = this.getMusicManager(textChannel.getGuild());
+        musicManager.getOperator().seek(textChannel, position);
+    }
+
 
 
     public static PlayerManager GetINSTANCE(){

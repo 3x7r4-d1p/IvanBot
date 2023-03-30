@@ -135,4 +135,11 @@ public class TrackOperator extends AudioEventAdapter {
             textChannel.sendMessage("Ниче не играет...").queue();
         }
     }
+
+    public void seek(TextChannel textChannel, long position){
+        AudioTrack track = audioPlayer.getPlayingTrack();
+
+        track.setPosition(position);
+        textChannel.sendMessage("Трек перемотан...").queue();
+    }
 }
