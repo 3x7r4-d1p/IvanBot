@@ -1,7 +1,9 @@
 package ivanbot;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -162,6 +164,26 @@ public class CommandManager extends ListenerAdapter {
                 position += hours.getAsInt() * 1000 * 3600;
 
                 PlayerManager.GetINSTANCE().seek(event.getChannel().asTextChannel(), position);
+                break;
+
+            case "autorolesadd":
+                event.reply("Обрабатываем ваш запрос, ожидайте...").setEphemeral(true).queue();
+                OptionMapping roleName = event.getOption("role");
+                OptionMapping secretPhrase = event.getOption("secretphrase");
+                String r = roleName.getAsString();
+                Role role = event.getGuild().getRolesByName(r, true).get(0);
+
+                Dotenv file = Dotenv.configure().load();
+                String PHRASE = file.get("PHRASE");
+                if (!secretPhrase.getAsString().equals(PHRASE)){
+                    event.getChannel().asTextChannel().sendMessage("SECRET PHRASE CHECK FAILED").queue();
+                }
+                else{
+                    if (!role.equals(null)) {
+                        event.getChannel().asTextChannel().sendMessage("AUTO ROLE ADDED").queue();
+                        AutoRole.addAutoRole(role, event.getGuild());
+                    }
+                }
                 break;
         }
     }
