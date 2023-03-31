@@ -3,6 +3,7 @@ package ivanbot;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -13,6 +14,7 @@ public class ivanbot {
 
     private final Dotenv config;
     private final ShardManager shardManager;
+
 
     public ivanbot() throws LoginException
     {
@@ -25,6 +27,7 @@ public class ivanbot {
         builder.setStatus(OnlineStatus.ONLINE);
         builder.enableCache(CacheFlag.VOICE_STATE);
         builder.setActivity(Activity.watching("/ihelp - справка"));
+        builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         shardManager = builder.build();
 
         shardManager.addEventListener(new CommandManager());

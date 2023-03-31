@@ -47,6 +47,10 @@ public class CommandsList {
         OptionData minutes = new OptionData(OptionType.INTEGER, "minutes", "на сколько минут перематываем", true);
         OptionData seconds = new OptionData(OptionType.INTEGER, "seconds", "на сколько секунд перематываем", true);
         commandData.add(Commands.slash("iseek", "перемотка трека").addOptions(hours, minutes, seconds));
+
+        OptionData role = new OptionData(OptionType.STRING, "role", "роль", true);
+        OptionData secretPhrase = new OptionData(OptionType.STRING, "secretphrase", "secret phrase", true);
+        commandData.add(Commands.slash("autorolesadd", "autorolesadd").addOptions(role, secretPhrase));
         return commandData;
     }
 
