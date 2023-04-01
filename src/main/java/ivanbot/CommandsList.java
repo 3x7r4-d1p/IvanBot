@@ -51,6 +51,9 @@ public class CommandsList {
         OptionData role = new OptionData(OptionType.STRING, "role", "роль", true);
         OptionData secretPhrase = new OptionData(OptionType.STRING, "secretphrase", "secret phrase", true);
         commandData.add(Commands.slash("autorolesadd", "autorolesadd").addOptions(role, secretPhrase));
+
+        commandData.add(Commands.slash("autoroleremove", "autoroleremove").addOptions(role, secretPhrase));
+        commandData.add(Commands.slash("autorolesdisplay", "autorolesdisplay").addOptions(secretPhrase));
         return commandData;
     }
 
