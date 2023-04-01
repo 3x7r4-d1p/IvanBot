@@ -37,6 +37,8 @@ public class CommandManager extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         String command = event.getName();
+        Dotenv file = Dotenv.configure().load();
+        String PHRASE = file.get("PHRASE");
 
         switch(command)
         {
@@ -173,8 +175,6 @@ public class CommandManager extends ListenerAdapter {
                 String r = roleName.getAsString();
                 Role role = event.getGuild().getRolesByName(r, true).get(0);
 
-                Dotenv file = Dotenv.configure().load();
-                String PHRASE = file.get("PHRASE");
                 if (!secretPhrase.getAsString().equals(PHRASE)){
                     event.getChannel().asTextChannel().sendMessage("SECRET PHRASE CHECK FAILED").queue();
                 }
@@ -184,6 +184,25 @@ public class CommandManager extends ListenerAdapter {
                         AutoRole.addAutoRole(role, event.getGuild());
                     }
                 }
+                break;
+
+            case "autoroleremove":
+                event.reply("Обрабатываем ваш запрос, ожидайте...").setEphemeral(true).queue();
+                Role role_ = event.getGuild().getRolesByName(event.getOption("role").getAsString(), true).get(0);
+                if (!event.getOption("secretphrase").getAsString().equals(PHRASE)){
+                    event.getChannel().asTextChannel().sendMessage("SECRET PHRASE CHECK FAILED").queue();
+                }
+                else if (!role_.equals(null)){
+                    AutoRole.autoRoleRemove(event.getGuild(), role_);
+                }
+                break;
+
+            case "autorolesdisplay":
+                event.reply("Обрабатываем ваш запрос, ожидайте...").setEphemeral(true).queue();
+                if (!event.getOption("secretphrase").getAsString().equals(PHRASE)){
+                    event.getChannel().asTextChannel().sendMessage("SECRET PHRASE CHECK FAILED").queue();
+                }
+                AutoRole.autoRoleDisplay(event.getGuild(), event.getChannel().asTextChannel());
                 break;
         }
     }
