@@ -58,17 +58,13 @@ public class AutoRole {
 
                 while (reader.hasNextLine()){
                     String str = reader.nextLine() + "\n";
-                    if (str.contains(guild.getId()) && str.contains(role.getId())){
-                    }
-                    else {
+                    if (!str.contains(guild.getId()) || !str.contains(role.getId()))
                         writer.append(str);
-                    }
                 }
                 reader.close();
                 file.delete();
                 writer.close();
 
-                    File newFile = new File (HELP_FILE_PATH.toUri());
                     Files.move(HELP_FILE_PATH, HELP_FILE_PATH.resolveSibling("rolesConfig.txt"));
 
             }
@@ -82,7 +78,7 @@ public class AutoRole {
         }
     }
 
-    public static void autoRoleDisplay(Guild guild, TextChannel channel){
+    public static void autoRoleDisplay(TextChannel channel){
         try{
             File file = new File (FILE_PATH.toUri());
             Scanner reader = new Scanner(file);
@@ -90,6 +86,7 @@ public class AutoRole {
                 String str = reader.nextLine();
                 channel.sendMessage(str).queue();
             }
+            channel.sendMessage("======End of file======").queue();
             reader.close();
         }
         catch (FileNotFoundException e){
