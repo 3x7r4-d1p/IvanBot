@@ -90,6 +90,7 @@ public class AutoRole {
                 String str = reader.nextLine();
                 channel.sendMessage(str).queue();
             }
+            channel.sendMessage("=====End of file=====").queue();
             reader.close();
         }
         catch (FileNotFoundException e){
