@@ -87,6 +87,15 @@ public class TrackOperator extends AudioEventAdapter {
         }
     }
 
+    public boolean isPaused(){
+        if (audioPlayer.isPaused()){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     public void skipMany(int amount){
         for (int i = 0; i < amount; i++)
         {

@@ -58,6 +58,11 @@ public class PlayerManager {
         this.audioPlayerManager.loadItemOrdered(musicManager, trackURL, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
+
+                if (musicManager.getOperator().isPaused())
+                {
+                    textChannel.sendMessage("**==========ВНИМАНИЕ! Бот поставлен на паузу!==========**").queue();
+                }
                 if (musicManager.getOperator().getQueue().size() >= MAX_SONG_AMOUNT)
                 {
                     textChannel.sendMessage("Превышено максимальное количество треков - **" + MAX_SONG_AMOUNT + "**\nОперация не выполнена.").queue();
@@ -69,6 +74,10 @@ public class PlayerManager {
 
             @Override
             public void playlistLoaded(AudioPlaylist audioPlaylist) {
+                if (musicManager.getOperator().isPaused())
+                {
+                    textChannel.sendMessage("**==========ВНИМАНИЕ! Бот поставлен на паузу!==========**").queue();
+                }
                 if (trackURL.contains("audio")){
                     if (musicManager.getOperator().getQueue().size() >= MAX_SONG_AMOUNT){
                         textChannel.sendMessage("Превышено максимальное количество треков - **" + MAX_SONG_AMOUNT + "**\nОперация не выполнена.").queue();

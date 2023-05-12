@@ -189,7 +189,7 @@ public class CommandManager extends ListenerAdapter {
                 if (!event.getOption("secretphrase").getAsString().equals(PHRASE)){
                     event.getChannel().asTextChannel().sendMessage("SECRET PHRASE CHECK FAILED").queue();
                 }
-                AutoRole.autoRoleDisplay(event.getChannel().asTextChannel());
+                else AutoRole.autoRoleDisplay(event.getChannel().asTextChannel());
                 break;
         }
     }
@@ -219,7 +219,6 @@ public class CommandManager extends ListenerAdapter {
         String link = "";
         if (!audioManager.isConnected()) {
             audioManager.openAudioConnection(memberChannel);
-            event.getChannel().asTextChannel().sendMessage("**!!!Интерфейс команды /isearch получил обновление, советую заценить :)!!!**").queue();
         }
 
 
